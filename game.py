@@ -501,6 +501,10 @@ def game():
                     a = int(answer)
                 except:
                     print("Wrong answer, this was not a number!!")
+                    lostFood = random.randint(1,10)
+                    hero.hunger += lostFood
+                    print("Oh no...you lost {} food!".format(lostFood))
+                    
                     continue
                 if a == c:
                     print("correct answer")
@@ -517,16 +521,19 @@ def game():
                             hero.hp += win1
                         if win == "g":
                             hero.gold += win1
-						                    else:
+                    else:
                         print("correct answer but too slow...") 
-                    dungeon[hero.x][hero.y][hero.z] = "."
+                        lostGold = random.randint(1,10)
+                        hero.gold -= lostGold   
+                        print("Oh no...you lose {} gold!".format(lostGold))
+                    dungeon[hero.z][hero.y][hero.x] = "."
                     break
                 else:
                     print("wrong answer...try again")
                     lostDamage = random.randint(1,10)
                     hero.hp -= lostDamage
-					print("Oh no...you lose {} hp!".format(lostDamage)
-                  
+                    print("Oh no...you lose {} hp!".format(lostDamage))
+                    
     # --- game over ---
     print("*-*-*-*-*-*- Game Over -*-*-*-*-*-*-*-*")
     if hero.hunger >= 200:
