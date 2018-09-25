@@ -1,4 +1,5 @@
 import random
+import time
 
 # TODO: box with key
 
@@ -16,6 +17,7 @@ legende = {"." : "floor",
            "s" : "sword",
            "o" : "shield",
            "a" : "axe",
+           "§" : "box key",
            }
 
 level1 = """
@@ -39,8 +41,15 @@ level3 = """
 #......M..k........#.............k#
 ###################################"""
 
-
-
+level4 = """
+####################################
+#<..b.............................4#
+#>.................................#
+#..................................#
+#..................................#
+#..................................#
+#..................................#
+####################################"""
 
 
             
@@ -104,6 +113,7 @@ class Player(Monster):
         self.defense = 0.33
         self.gold = 0
         self.keys = 0
+        self.boxkey = 0
         self.hunger = 0
         self.mindamage = 1
         self.maxdamage = 10
@@ -245,7 +255,7 @@ def game():
     hero = Player(1,3,0)
     # ---- dungeon prepare ----
     dungeon = []
-    for z, a in enumerate((level1, level2, level3)):
+    for z, a in enumerate((level1, level2, level3, level4)):
         level = []
         for y, b in enumerate(a.splitlines()):
             line = []
@@ -465,14 +475,7 @@ def game():
                 print("oh.. {} a chain armor!".format(q))
                 hero.defensebonus = random.choice((0,0.1,0,0.1,0,0,0.1,0.1,0,0.1,0.1))
                 hero.armors.append("{} chain armor".format(q)) 
-                   
-        
-        
-        
-        
-        
-        
-         
+                 
         # --- healing potion ----
         if dungeon[hero.z][hero.y][hero.x] == "h":
             dungeon[hero.z][hero.y][hero.x] = "."
@@ -485,23 +488,45 @@ def game():
             hero.keys += 1
         # --- box ----
         if dungeon[hero.z][hero.y][hero.x] == "b":
-            if hero.keys < 1:
-                print("a locked box, where is the key?")
-            else:
-                print("you open the box with a key")
-                hero.keys -= 1
-                dungeon[hero.x] = "."
-                bounty = random.choice("$hf") # gold, healing potion, food
-                amount = random.randint(10,25)
-                print("Hurra, In the box you find {} pieces of {}!".format(
-                      menge, legende[bounty]))
-                if bounty == "$":
-                    hero.gold += amount
-                if bounty == "h":
-                    hero.hp += amount
-                if bounty == "f":
-                    hero.hunger -= amount
-    
+            a = random.randint(1,10)
+            b = random.randint(1,10)
+            string_a = str(a)
+            string_b = str(b)
+            c = a * b
+            questiontime = time.time()
+            while True:
+                print("you first have to resolve a matematical quiz! How much is " + string_a + " * " + string_b + "?")
+                answer = input(">>>")
+                try:
+                    a = int(answer)
+                except:
+                    print("Wrong answer, this was not a number!!")
+                    continue
+                if a == c:
+                    print("correct answer")
+                    if time.time() - questiontime < 5: 
+                        # 5 seconds ?
+                        print("correct answer fast enough, congratulations")
+                        # belohnung
+                        win = random.choice("fhg")
+                        win1 = random.randint(10,20)
+                        print("you receive {} {} !".format(win1,win))
+                        if win == "f":
+                            hero.food -= win1
+                        if win == "h":
+                            hero.hp += win1
+                        if win == "g":
+                            hero.gold += win1
+						                    else:
+                        print("correct answer but too slow...") 
+                    dungeon[hero.x][hero.y][hero.z] = "."
+                    break
+                else:
+                    print("wrong answer...try again")
+                    lostDamage = random.randint(1,10)
+                    hero.hp -= lostDamage
+					print("Oh no...you lose {} hp!".format(lostDamage)
+                  
     # --- game over ---
     print("*-*-*-*-*-*- Game Over -*-*-*-*-*-*-*-*")
     if hero.hunger >= 200:
