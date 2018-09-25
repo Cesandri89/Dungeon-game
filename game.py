@@ -51,8 +51,48 @@ level4 = """
 #..................................#
 ####################################"""
 
-
-            
+class Item():
+	number = 0
+	storage = []
+	
+	def __init__(self, x, y, z):
+		self.x = x
+		self.y = y
+		self.z = z
+		self.carrier = None
+		self.char = "i"
+		self.number = Item.number
+		Item.number += 1
+		Item.storage.append(self)
+		self.overwrite()
+		self.quality = 0.9
+        
+    def overwrite(self):
+        pass
+        
+class Sword(Item):
+	
+	def overwrite(self):
+	    self.quality = random.choice((0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1.0))
+	    self.maxdamage = 10
+        self.mindamage = 2
+class Axe(Item):
+	
+	def overwrite(self):
+		self.quality = random.choice((0.4,0.5,0.7,0.9,0.10)
+		self.mindamage = 6
+		self.maxdamage = 12
+		self.defense = 0.6
+		
+class Dagger(Item):
+	
+	def overwrite(self):
+		self.quality = random.choice((0.7,0.85,0.9))
+		self.mindamage = 4
+		self.maxdamage = 8
+		self.defense = 0.85
+		self.attack = 0.7
+		
 class Monster():
     number = 0
     zoo = []
