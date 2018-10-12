@@ -22,9 +22,9 @@ legende = {"." : "floor",
 
 level1 = """
 ###################################
-#>...o...#........M.........o....1#
+#>...o...#........M.....k...o....1#
 #....*...d..f............M........#
-#k.......#........M..........s....#
+#k...ß...#........M..........s....#
 ###################################"""
 
 level2 = """
@@ -52,47 +52,47 @@ level4 = """
 ####################################"""
 
 class Item():
-	number = 0
-	storage = []
-	
-	def __init__(self, x, y, z):
-		self.x = x
-		self.y = y
-		self.z = z
-		self.carrier = None
-		self.char = "i"
-		self.number = Item.number
-		Item.number += 1
-		Item.storage.append(self)
-		self.overwrite()
-		self.quality = 0.9
+    number = 0
+    storage = []
+    
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.carrier = None
+        self.char = "i"
+        self.number = Item.number
+        Item.number += 1
+        Item.storage.append(self)
+        self.overwrite()
+        self.quality = 0.9
         
     def overwrite(self):
         pass
         
 class Sword(Item):
-	
-	def overwrite(self):
-	    self.quality = random.choice((0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1.0))
-	    self.maxdamage = 10
+    
+    def overwrite(self):
+        self.quality = random.choice((0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1.0))
+        self.maxdamage = 10
         self.mindamage = 2
 class Axe(Item):
-	
-	def overwrite(self):
-		self.quality = random.choice((0.4,0.5,0.7,0.9,0.10)
-		self.mindamage = 6
-		self.maxdamage = 12
-		self.defense = 0.6
-		
+    
+    def overwrite(self):
+        self.quality = random.choice((0.4,0.5,0.7,0.9,0.10))
+        self.mindamage = 6
+        self.maxdamage = 12
+        self.defense = 0.6
+        
 class Dagger(Item):
-	
-	def overwrite(self):
-		self.quality = random.choice((0.7,0.85,0.9))
-		self.mindamage = 4
-		self.maxdamage = 8
-		self.defense = 0.85
-		self.attack = 0.7
-		
+    
+    def overwrite(self):
+        self.quality = random.choice((0.7,0.85,0.9))
+        self.mindamage = 4
+        self.maxdamage = 8
+        self.defense = 0.85
+        self.attack = 0.7
+        
 class Monster():
     number = 0
     zoo = []
@@ -166,7 +166,8 @@ class Player(Monster):
         self.damagebonus = 0
         self.attackbonus = 0
         self.maxdambonus = 0
-        self.mindambonus = 0    
+        self.mindambonus = 0
+       
     
     def select_weapon(self):
         if len(self.weapons) == 1:
@@ -393,6 +394,26 @@ def game():
                 dy = 0
                 battle(hero, m)
                 break
+        #Teleporter
+        if dungeon[hero.z][hero.y][hero.x] == "ß":
+            for v in range(1000):
+                x = random.randint(-10,10)
+                y = random.randint(-10,10)
+                if x == 0 and y == 0:
+                    continue
+                try:
+                    t = dungeon[hero.z][hero.y+y][hero.x+x]
+                except:
+                    continue # out of dungoen error
+                if t in ".kf*": # floor, key or food or flower 
+                    hero.y += y
+                    hero.x += x
+                    break
+            else:
+                print("the teleporter could not find a legal field for teleportation")
+                
+                    
+            #hero.x += 
         # --- wall ? ----
         if dungeon[hero.z][hero.y+dy][hero.x+dx] == "#":
             print("ouch, a wall!")
