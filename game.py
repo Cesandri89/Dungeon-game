@@ -111,6 +111,7 @@ class Monster():
         self.mindamage = 1
         self.maxdamage = 3
         self.aggro = 3
+        self.weapon = "fist"
         self.overwrite()
         
         
@@ -141,9 +142,6 @@ class Monster():
         dy = random.choice((-1,0,0,0,1))
         return dx, dy
         
-            
-            
-        
 class Player(Monster):
     
     def overwrite(self):
@@ -167,6 +165,7 @@ class Player(Monster):
         self.attackbonus = 0
         self.maxdambonus = 0
         self.mindambonus = 0
+        self.weaponquality = 1.0
        
     
     def select_weapon(self):
@@ -267,7 +266,7 @@ def strike(a, d):
             a.happyend = True
             return
     print("{} is hitting {}!".format(namea, named))
-    r1 = random.random()
+    r1 = random.random()   #if dungeon
     if r1 > a.attack:
         print("{} fails to attack".format(
               namea))
@@ -281,17 +280,24 @@ def strike(a, d):
     d.hp -= damage
     print("Hit! {} takes {} damage and has  {} hp left.".format(
           named, damage, d.hp))
+    if a.weapon != "fist":
+         a.weaponquality -= random.choice((0.0,0.01,0.02,0.015))
+         if a.weaponquality <= 0.0:
+             print("The weapon of {} is destroyed".format(namea))
     if d.hp <= 0:
         print("{} wins vs  {}".format(namea, named))
  
 
 def battle(a, d):
+    #a.weaponquality -= 0.01
     print("---- Strike! -----")
     strike(a, d)
     if d.hp > 0:
         print("----Counterstrike! -----")
         strike( d, a)
-
+    #if hero.weaponquality == 0:
+        
+    
 def game():
     hero = Player(1,3,0)
     # ---- dungeon prepare ----
@@ -342,8 +348,8 @@ def game():
                     print(char, end="")
             print() # line-end
         print()     # dungeon end
-        command = input("hp: {} gold: {} hunger: {} keys: {} flowers: {}  mindamage: {} maxdamage: {} attack: {} defense: {}  weapon: {} - armor: {} (press i to change)>>>".format(
-                         hero.hp, hero.gold, hero.hunger, hero.keys, hero.flowers ,hero.mindamage , hero.maxdamage , hero.attack , hero.defense, hero.weapon , hero.armors))
+        command = input("hp: {} gold: {} hunger: {} keys: {} flowers: {}  mindamage: {} maxdamage: {} attack: {} defense: {}  weapon: {} - armor: {} weapon quality: {} (press i to change)>>>".format(
+                         hero.hp, hero.gold, hero.hunger, hero.keys, hero.flowers ,hero.mindamage , hero.maxdamage , hero.attack , hero.defense, hero.weapon , hero.armors, hero.weaponquality))
         dx = 0
         dy = 0
         if command == "a":
@@ -363,7 +369,7 @@ def game():
                 print("you are at the highest floor already")
             elif dungeon[hero.z][hero.y][hero.x] == "<":
                 hero.z -= 1
-                continue
+                continue 
             else:
                 print("you must find a stair up (<)")
         
@@ -487,10 +493,11 @@ def game():
             hero.attackbonus = random.choice((-0.1,0.1,-0.2,0.2))
             hero.defensebonus = random.choice((-0.05,-0.5,0.1 ,0,1, -0.5))
             hero.weapons.append("Sword")
-            #hero.mindamage += 4
-            #hero.maxdamage += 4
-            #hero.attack += 0.05
-            #hero.defense -= 0.05
+            hero.mindamage += 4
+            hero.maxdamage += 4
+            hero.attack += 0.05
+            hero.defense -= 0.05
+            hero.liveweapon = 6
         # --- axe ---
         if dungeon[hero.z][hero.y][hero.x] == "s":
             dungeon[hero.z][hero.y][hero.x] = "."
@@ -504,6 +511,7 @@ def game():
             hero.maxdambonus = random.choice((-1,0,6,6,0,-1))
             hero.attackbonus = random.choice((-0.1,0.1,-0.2,0.2))
             hero.defensebonus = random.choice((-0.05,-0.5, 0.1, -0.5, -0.5))
+            hero.liveweapon = 4
             hero.weapons.append("Axe")
         # --- shield ---
         #if dungeon[hero.z][hero.y][hero.x] == "o":
