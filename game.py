@@ -675,10 +675,10 @@ def game():
         print(name, friedhof[name])
     print(" total kills: {} ".format(menge))
     if hero.happyend and not hero.hunger < 0 and not hero.hunger > 199:
-            print("* - * - * - * - * - * - * - * - * - * - * ")
+            print("* - * - * - * - * - * - * - * - * - * - * - * - * ")
             print("The Princessin accept the flower and she married the hero") 
             print("You win!")
-            print("* - * - * - * - * - * - * - * - * - * - * ")
+            print("* - * - * - * - * - * - * - * - * - * - * - * ")
 if __name__ == "__main__":
     game()                
                 
