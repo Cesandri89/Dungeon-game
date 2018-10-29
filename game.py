@@ -24,7 +24,10 @@ level1 = """
 ###################################
 #>.B.o...#........M.....k...o....1#
 #....*...d..f............M........#
-#k...ß...#........M..........s....#
+#k.a.ß...#........M..........s....#
+#.........#########################
+#........ZZZZZZZ...ZZZZZ..........#
+#..ZZZZZZ.........Z.......Z.......#
 ###################################"""
 
 level2 = """
@@ -173,11 +176,12 @@ class Player(Monster):
         self.weapons = []
         self.armor = None
         self.armors = []
+        self.naturalweapon = "fist"
         self.damagebonus = 0
         self.attackbonus = 0
         self.maxdambonus = 0
         self.mindambonus = 0
-        self.weaponquality = 1.0
+        #sself.weaponquality = 1.0
        
     
     def select_weapon(self):
@@ -224,8 +228,9 @@ class Bandit(Monster):
         self.defense = 0.2
         self.attack = 0.4
         self.mindamage = 7 
-        self.maxdamege = 14
+        self.maxdamage = 14
         self.aggro = 3
+        self.naturalweapon = "fist"
         
 class Dragon(Monster):
     
@@ -237,6 +242,7 @@ class Dragon(Monster):
         self.mindamage = 10
         self.maxdamage = 20
         self.aggro = 2
+        self.naturalweapon = "fire"
     
 class Princess(Monster):
     
@@ -247,6 +253,7 @@ class Princess(Monster):
         self.maxdamage = 1
         self.aggro = 2
         self.defense = 0.1
+        self.naturalweapon = "fist"
         
     def ai(self):
         # random movement
@@ -265,6 +272,7 @@ class Bat(Monster):
         self.mindamage = 0
         self.maxdamage = 3
         self.aggro = 5
+        self.naturalweapon = "bite"
     
     def ai(self):
         # random movement
@@ -316,15 +324,17 @@ def strike(a, d):
         print("{} wins vs  {}".format(namea, named))
  
 def weapondamage(owner):
-	 if owner.weapon is not None:
+     if owner.weapon is not None:
                 weapondamage = random.choice((0.0,0.01,0.02,0.015))
                 if weapondamage > 0:
                     print("weapon of {} looses {} quality".format(owner.__class__.__name__, weapondamage))
-                owner.weaponquality -= weapondamage
-                if owner.weaponquality <= 0.0:
-                     print("The weapon of {} is destroyed".format(owner.__class__.__name__))
-                     owner.weapon = None
-	
+                    Item.storage[owner.weapon].quality -= weapondamage
+                    print("weapon-quality is now {:.3f}".format(Item.storage[owner.weapon].quality))
+                    #owner.weaponquality -= weapondamage
+                    if Item.storage[owner.weapon].quality <= 0.0:
+                        print("The weapon of {} is destroyed".format(owner.__class__.__name__))
+                        owner.weapon = None
+    
 
 def battle(a, d):
     #a.weaponquality -= 0.01
@@ -395,8 +405,12 @@ def game():
                     print(char, end="")
             print() # line-end
         print()     # dungeon end
-        command = input("hp: {} gold: {} hunger: {} keys: {} flowers: {}  mindamage: {} maxdamage: {} attack: {} defense: {}  weapon: {} - armor: {} weapon quality: {} (press i to change)>>>".format(
-                         hero.hp, hero.gold, hero.hunger, hero.keys, hero.flowers ,hero.mindamage , hero.maxdamage , hero.attack , hero.defense, Item.storage[hero.weapon].__class__.__name__ , Item.storage[hero.armor].__class__.__name__, Item.storage[hero.weapon].quality))
+        if hero.weapon is None:
+            weapon = hero.naturalweapon
+        else:
+            weapon = Item.storage[hero.weapon].__class__.__name__
+        command = input("hp: {} gold: {} hunger: {} keys: {} flowers: {}  mindamage: {} maxdamage: {} attack: {} defense: {}  weapon: {} - armor: {} | weapon quality: {:.5f} (press i to change)>>>".format(
+                         hero.hp, hero.gold, hero.hunger, hero.keys, hero.flowers ,hero.mindamage , hero.maxdamage , hero.attack , hero.defense, weapon , Item.storage[hero.armor].__class__.__name__, Item.storage[hero.weapon].quality))
         dx = 0
         dy = 0
         if command == "a":
@@ -675,10 +689,10 @@ def game():
         print(name, friedhof[name])
     print(" total kills: {} ".format(menge))
     if hero.happyend and not hero.hunger < 0 and not hero.hunger > 199:
-            print("* - * - * - * - * - * - * - * - * - * - * - * - * ")
+            print("* - * - * - * - * - * - * - * - * - * - * ")
             print("The Princessin accept the flower and she married the hero") 
             print("You win!")
-            print("* - * - * - * - * - * - * - * - * - * - * - * ")
+            print("* - * - * - * - * - * - * - * - * - * - * ")
 if __name__ == "__main__":
     game()                
                 
