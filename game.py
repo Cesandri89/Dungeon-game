@@ -77,7 +77,7 @@ class Item():
 class Sword(Item):
     
     def overwrite(self):
-        self.quality = random.choice((0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1.0))
+        self.quality = random.choice((0.5, 0.6, 0.7, 0.7, 0.8, 0.9, 1.0))
         self.maxdamage = 10
         self.mindamage = 2
         self.length = 100
@@ -94,7 +94,7 @@ class Axe(Item):
 class Dagger(Item):
     
     def overwrite(self):
-        self.quality = random.choice((0.7,0.85,0.9))
+        self.quality = random.choice((0.7,0.8,0.9))
         self.mindamage = 4
         self.maxdamage = 8
         self.defense = 0.85
@@ -120,9 +120,20 @@ class Monster():
         self.maxdamage = 3
         self.aggro = 3
         self.weapon = None
+        self.weapons = []
         self.armor = None
+        self.armors = []
+        self.naturalweapon = "bite"
         self.overwrite()
-        
+
+    def equip(self):
+        """creates a random armor and a random weapon to use for this monster"""
+        a = Armor(carrier=self.number)
+        w = random.choice((Sword(carrier=self.number), Axe(carrier=self.number), Dagger(carrier=self.number)))
+        self.armors.append(a.number)
+        self.armor = a.number
+        self.weapons.append(w.number)
+        self.weapon = w.number
         
     def overwrite(self):
         pass
@@ -156,7 +167,33 @@ class Armor(Item):
     def overwrite(self):
         self.quality = random.choice((0.3,0.4,0.45,0.5,0.5,0.6,0.65,0.7,0.8,0.85,0.9))
         self.damagereducing = random.randint(1,5)
-       
+
+class Leatherarmor(Armor):
+    
+    def overwrite(self):
+        self.quality = random.choice((0.3,0.4,0.45,0.5,0.5,0.6,0.65,0.7,0.8,0.85,0.9, 1.0))
+        self.damagereducing = round(4 * self.quality,0)
+        
+class Ringmail(Armor):
+    
+    def overwrite(self):
+        self.quality = random.choice((0.3,0.4,0.45,0.5,0.5,0.6,0.65,0.7,0.8,0.85,0.9, 1.0))
+        self.damagereducing = round(4 * self.quality,0)
+    
+    
+class Chainmail(Armor):
+    
+    def overwrite(self):
+        self.quality = random.choice((0.3,0.4,0.45,0.5,0.5,0.6,0.65,0.7,0.8,0.85,0.9, 1.0))
+        self.damagereducing = round(7 * self.quality,0)
+    
+
+class Platemail(Armor):
+
+    def overwrite(self):
+        self.quality = random.choice((0.3,0.4,0.45,0.5,0.5,0.6,0.65,0.7,0.8,0.85,0.9, 1.0))
+        self.damagereducing = round(10 * self.quality,0)
+
 class Player(Monster):
     
     def overwrite(self):
@@ -172,16 +209,17 @@ class Player(Monster):
         self.maxdamage = 10
         self.flowers = 0
         self.happyend = False
-        self.weapon = None
-        self.weapons = []
-        self.armor = None
-        self.armors = []
+        #self.weapon = None
+        #self.weapons = []
+        #self.armor = None
+        #self.armors = []
         self.naturalweapon = "fist"
         self.damagebonus = 0
         self.attackbonus = 0
         self.maxdambonus = 0
         self.mindambonus = 0
         #sself.weaponquality = 1.0
+        self.equip()
        
     
     def select_weapon(self):
@@ -231,6 +269,7 @@ class Bandit(Monster):
         self.maxdamage = 14
         self.aggro = 3
         self.naturalweapon = "fist"
+        self.equip()
         
 class Dragon(Monster):
     
@@ -329,7 +368,7 @@ def weapondamage(owner):
                 if weapondamage > 0:
                     print("weapon of {} looses {} quality".format(owner.__class__.__name__, weapondamage))
                     Item.storage[owner.weapon].quality -= weapondamage
-                    print("weapon-quality is now {:.3f}".format(Item.storage[owner.weapon].quality))
+                    print("weapon-quality is now {:.2f}".format(Item.storage[owner.weapon].quality))
                     #owner.weaponquality -= weapondamage
                     if Item.storage[owner.weapon].quality <= 0.0:
                         print("The weapon of {} is destroyed".format(owner.__class__.__name__))
@@ -348,12 +387,6 @@ def battle(a, d):
     
 def game():
     hero = Player(1,3,0)
-    a = Armor(carrier=0)
-    w = random.choice((Sword(carrier=0), Axe(carrier=0), Dagger(carrier=0)))
-    hero.armors.append(a.number)
-    hero.armor = a.number
-    hero.weapons.append(w.number)
-    hero.weapon = w.number
     # ---- dungeon prepare ----
     dungeon = []
     for z, a in enumerate((level1, level2, level3, level4)):
@@ -409,8 +442,14 @@ def game():
             weapon = hero.naturalweapon
         else:
             weapon = Item.storage[hero.weapon].__class__.__name__
-        command = input("hp: {} gold: {} hunger: {} keys: {} flowers: {}  mindamage: {} maxdamage: {} attack: {} defense: {}  weapon: {} - armor: {} | weapon quality: {:.5f} (press i to change)>>>".format(
-                         hero.hp, hero.gold, hero.hunger, hero.keys, hero.flowers ,hero.mindamage , hero.maxdamage , hero.attack , hero.defense, weapon , Item.storage[hero.armor].__class__.__name__, Item.storage[hero.weapon].quality))
+        text = ""
+        text += "hp: {} $: {} hungry: {} keys: {} flowers: {}".format(hero.hp, hero.gold, hero.hunger, hero.keys, hero.flowers)
+        armor = Item.storage[hero.armor]
+        weapon = Item.storage[hero.weapon]
+        text += "\nArmor: {} ({}%) Weapon: {} ({}%) Att: {} Def: {} Mindmg: {} Maxdmg: {}".format(
+                 armor.__class__.__name__, armor.quality, weapon.__class__.__name__, weapon.quality,
+                 hero.attack, hero.defense, hero.mindamage , hero.maxdamage)
+        command = input(text)
         dx = 0
         dy = 0
         if command == "a":
